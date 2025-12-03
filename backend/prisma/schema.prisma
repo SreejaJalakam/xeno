@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id                String   @id @default(uuid())
+  name              String
+  shopify_store_url String   @unique
+  api_key           String
+  api_secret        String
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  customers Customer[]
+  orders    Order[]
+  products  Product[]
+}
+
+model Customer {
+  id                  String   @id @default(uuid())
+  tenant_id           String
+  shopify_customer_id String
+  first_name          String?
+  last_name           String?
+  email               String?
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  orders Order[]
+
+  @@unique([tenant_id, shopify_customer_id])
+}
+
+model Order {
+  id               String   @id @default(uuid())
+  tenant_id        String
+  shopify_order_id String
+  customer_id      String?
+  total_price      Float
+  currency         String   @default("USD")
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  tenant   Tenant    @relation(fields: [tenant_id], references: [id])
+  customer Customer? @relation(fields: [customer_id], references: [id])
+
+  @@unique([tenant_id, shopify_order_id])
+}
+
+model Product {
+  id                 String   @id @default(uuid())
+  tenant_id          String
+  shopify_product_id String
+  title              String
+  price              Float
+  inventory          Int      @default(0)
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenant_id], references: [id])
+
+  @@unique([tenant_id, shopify_product_id])
+}
