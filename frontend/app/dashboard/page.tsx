@@ -40,7 +40,7 @@ export default function Dashboard() {
 
     const fetchStats = async (id: string) => {
         try {
-            const response = await axios.get(`http://localhost:4000/api/analytics/stats?tenantId=${id}`);
+            const response = await axios.get(`/api/analytics/stats?tenantId=${id}`);
             setStats(response.data);
         } catch (error) {
             console.error('Error fetching stats:', error);
@@ -143,61 +143,59 @@ export default function Dashboard() {
                     </div>
                 </div>
 
-        </div>
+                {/* Charts & Top Customers */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="bg-white p-6 rounded-lg shadow">
+                        <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Revenue Trend</h3>
+                        <div className="h-80">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={salesData}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="name" />
+                                    <YAxis />
+                                    <Tooltip />
+                                    <Legend />
+                                    <Line type="monotone" dataKey="sales" stroke="#4f46e5" />
+                                </LineChart>
+                            </ResponsiveContainer>
+                        </div>
+                    </div>
 
-                {/* Charts & Top Customers */ }
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Revenue Trend</h3>
-            <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={salesData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="name" />
-                        <YAxis />
-                        <Tooltip />
-                        <Legend />
-                        <Line type="monotone" dataKey="sales" stroke="#4f46e5" />
-                    </LineChart>
-                </ResponsiveContainer>
-            </div>
+                    <div className="bg-white p-6 rounded-lg shadow">
+                        <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Top 5 Customers by Spend</h3>
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                                        <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Spent</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200">
+                                    {/* @ts-ignore */}
+                                    {stats.topCustomers?.map((customer: any, index: number) => (
+                                        <tr key={index}>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                                {customer.name}
+                                                <div className="text-xs text-gray-500">{customer.email}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                ${customer.totalSpent.toLocaleString()}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                    {/* @ts-ignore */}
+                                    {(!stats.topCustomers || stats.topCustomers.length === 0) && (
+                                        <tr>
+                                            <td colSpan={2} className="px-6 py-4 text-center text-sm text-gray-500">No data available</td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
-
-        <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">Top 5 Customers by Spend</h3>
-            <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                        <tr>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Spent</th>
-                        </tr>
-                    </thead>
-                    <tbody className="bg-white divide-y divide-gray-200">
-                        {/* @ts-ignore */}
-                        {stats.topCustomers?.map((customer: any, index: number) => (
-                            <tr key={index}>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    {customer.name}
-                                    <div className="text-xs text-gray-500">{customer.email}</div>
-                                </td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    ${customer.totalSpent.toLocaleString()}
-                                </td>
-                            </tr>
-                        ))}
-                        {/* @ts-ignore */}
-                        {(!stats.topCustomers || stats.topCustomers.length === 0) && (
-                            <tr>
-                                <td colSpan={2} className="px-6 py-4 text-center text-sm text-gray-500">No data available</td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-            </main >
-        </div >
     );
 }
