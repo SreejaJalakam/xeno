@@ -11,8 +11,12 @@ Ensure your latest changes are pushed.
 3.  **Configure Project**:
     *   **Framework Preset**: **Next.js**.
     *   **Root Directory**: **IMPORTANT**: Click Edit and select `frontend`.
-4.  **Environment Variables**:
-    *   `DATABASE_URL`: Your Postgres connection string (e.g., from Neon/Supabase).
+4.  **Environment Variables** (Expand this section):
+    *   **Key**: `DATABASE_URL`
+    *   **Value**: Your PostgreSQL Connection String.
+    *   *Need a database?*
+        *   **Neon (Recommended)**: Go to [neon.tech](https://neon.tech), create a free project, copy the "Connection String" (starts with `postgres://...`).
+        *   **Supabase**: Go to [supabase.com](https://supabase.com), create project, go to Settings -> Database -> Connection String -> URI.
 5.  **Deploy**.
 
 That's it! The backend API routes will be deployed as serverless functions alongside your frontend.
