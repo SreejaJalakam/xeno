@@ -236,12 +236,8 @@ Dashboard → GET /api/analytics/stats?tenantId=X →
 Local Machine → Node.js + PostgreSQL → http://localhost
 ```
 
-**Production (Recommended):**
-```
-Frontend: Vercel/Netlify
-Backend: Railway/Heroku/AWS
-Database: Managed PostgreSQL (AWS RDS, Supabase)
-```
+**Production (Vercel):**
+See [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md) for the complete guide on deploying Frontend and Backend as separate Serverless projects.
 
 **Docker:**
 ```

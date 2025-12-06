@@ -16,7 +16,10 @@ docker-compose up -d
 open http://localhost:3000
 ```
 
-**Manual Setup:**
+**Deployment:**
+For production deployment on Vercel (recommended), see [VERCEL_DEPLOYMENT.md](VERCEL_DEPLOYMENT.md).
+
+**Manual Local Setup:**
 See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed setup instructions.
 
 ## Architecture

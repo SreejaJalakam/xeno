@@ -7,6 +7,7 @@ import { Users, ShoppingBag, DollarSign, TrendingUp } from 'lucide-react';
 import axios from 'axios';
 
 // Mock data for charts
+// Chart data is mocked for demo purposes. Real implementation would require complex SQL aggregations by date.
 const salesData = [
     { name: 'Jan', sales: 4000 },
     { name: 'Feb', sales: 3000 },
