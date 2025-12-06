@@ -31,7 +31,6 @@ export async function GET(req: Request) {
 
         // Enrich top customers with names
         const enrichedTopCustomers = await Promise.all(
-        const enrichedTopCustomers = await Promise.all(
             topCustomers.map(async (item: any) => {
                 const customer = await prisma.customer.findUnique({
                     where: { id: item.customer_id! },
