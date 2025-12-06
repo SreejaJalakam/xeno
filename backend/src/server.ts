@@ -22,7 +22,14 @@ app.get('/', (req, res) => {
     res.send('Shopify Ingestion Service API is running');
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    startScheduler();
-});
+// Export app for importing in entry file (e.g., Vercel)
+export default app;
+
+// Only listen if run directly (not imported)
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+        // Only start internal scheduler if running as a persistent server
+        startScheduler();
+    });
+}

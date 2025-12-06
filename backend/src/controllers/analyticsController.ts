@@ -11,7 +11,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
 
         const id = String(tenantId);
 
-        const [orderCount, customerCount, productCount, totalRevenue] = await Promise.all([
+        const [orderCount, customerCount, productCount, totalRevenue, topCustomers] = await Promise.all([
             prisma.order.count({ where: { tenant_id: id } }),
             prisma.customer.count({ where: { tenant_id: id } }),
             prisma.product.count({ where: { tenant_id: id } }),
@@ -19,7 +19,28 @@ export const getDashboardStats = async (req: Request, res: Response) => {
                 where: { tenant_id: id },
                 _sum: { total_price: true },
             }),
+            prisma.order.groupBy({
+                by: ['customer_id'],
+                where: { tenant_id: id, customer_id: { not: null } },
+                _sum: { total_price: true },
+                orderBy: { _sum: { total_price: 'desc' } },
+                take: 5,
+            }),
         ]);
+
+        // Enrich top customers with names
+        const enrichedTopCustomers = await Promise.all(
+            topCustomers.map(async (item) => {
+                const customer = await prisma.customer.findUnique({
+                    where: { id: item.customer_id! },
+                });
+                return {
+                    name: customer ? `${customer.first_name} ${customer.last_name}` : 'Unknown',
+                    email: customer?.email || '',
+                    totalSpent: item._sum.total_price || 0,
+                };
+            })
+        );
 
         const revenue = totalRevenue._sum.total_price || 0;
         const avgOrderValue = orderCount > 0 ? revenue / orderCount : 0;
@@ -30,6 +51,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
             totalProducts: productCount,
             totalRevenue: revenue,
             avgOrderValue: avgOrderValue,
+            topCustomers: enrichedTopCustomers,
         });
     } catch (error) {
         console.error('Error fetching stats:', error);

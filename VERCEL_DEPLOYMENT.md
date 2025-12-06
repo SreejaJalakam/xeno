@@ -1,31 +1,53 @@
-# Deploying Frontend to Vercel
+# Deploying to Vercel
 
-The frontend of this project is a **Next.js** application located in the `frontend/` directory. 
-By default, Vercel may try to deploy the root directory, which will result in a 404 error or a "No framework detected" warning.
+You will deploy this application as **two separate Vercel projects**: one for the frontend and one for the backend.
 
-## 🛠 Critical Configuration Step
+## Prerequisite: Database
+Since Vercel is serverless, you need an external PostgreSQL database.
+- Use **Neon**, **Supabase**, or **Railway** to get a Postgres Connection URL.
+- Connection String format: `postgresql://user:password@host:port/dbname?sslmode=require`
 
-You **must** configure Vercel to look for the application in the `frontend` folder.
+---
 
-### 1. Go to Project Settings
-1.  Log in to your Vercel Dashboard.
-2.  Click on your project (e.g., `xeno`).
-3.  Click on the **Settings** tab at the top.
+## Part 1: Backend Deployment
 
-> **Note:** Make sure you are in the **Project Settings**, not your Team Settings. You should see "General", "Domains", "Integrations", etc., in the sidebar.
+1.  **Push your code to GitHub**.
+2.  Go to Vercel Dashboard -> **Add New...** -> **Project**.
+3.  Import your repository.
+4.  **Configure Project**:
+    *   **Framework Preset**: Select `Other` (or handle as Node.js).
+    *   **Root Directory**: Click Edit -> Select `backend`.
+    *   **Build Command**: `npm run build`
+    *   **Output Directory**: `dist`
+    *   **Install Command**: `npm install`
+5.  **Environment Variables**:
+    *   `DATABASE_URL`: Your Postgres connection string.
+    *   `SHOPIFY_API_KEY`: (If needed global, otherwise tenants have it).
+    *   `JWT_SECRET`: Random secret.
+6.  **Deploy**.
+7.  **Note the URL**: e.g., `https://start-shopify-backend.vercel.app`.
 
-### 2. Update Root Directory
-1.  In the **General** section, locate the **Root Directory** setting.
-2.  Click **Edit**.
-3.  Select `frontend` or type `frontend`.
-4.  Click **Save**.
+### Configuring Cron Jobs (Ingestion)
+Since Vercel functions sleep, the background scheduler in `server.ts` won't run.
+1.  Go to your Vercel Project -> **Settings** -> **Cron Jobs**.
+2.  Create a job for path: `/api/ingestion/trigger-all`.
+3.  Schedule: `0 * * * *` (Hourly) or `*/10 * * * *` (Every 10 mins).
+    *   *Note*: Vercel Hobby plan allows 1 cron job per day. For demo, you can trigger it manually in browser: `https://your-backend.vercel.app/api/ingestion/trigger-all`.
 
-### 3. Redeploy
-1.  Go to the **Deployments** tab.
-2.  Find the most recent failed or static deployment.
-3.  Click the three dots (`...`) next to it and select **Redeploy**.
+---
+
+## Part 2: Frontend Deployment
+
+1.  Go to Vercel Dashboard -> **Add New...** -> **Project**.
+2.  Import the **same repository** again.
+3.  **Configure Project**:
+    *   **Framework Preset**: **Next.js**.
+    *   **Root Directory**: Click Edit -> Select `frontend`.
+4.  **Environment Variables**:
+    *   `NEXT_PUBLIC_API_URL`: The URL of your **Backend** deployment (e.g., `https://start-shopify-backend.vercel.app`).
+5.  **Deploy**.
 
 ## ✅ Verification
-- Vercel should now detect **Next.js**.
-- The build logs should show it entering the `frontend` directory.
-- The deployment should succeed and render the dashboard.
+1.  Open your Frontend URL.
+2.  Try to register a tenant (creates data in DB via Backend).
+3.  Check Dashboard.

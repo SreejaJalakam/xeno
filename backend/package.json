@@ -2,11 +2,13 @@
   "name": "shopify-ingestion-backend",
   "version": "1.0.0",
   "description": "Multi-tenant Shopify Data Ingestion Service",
-  "main": "dist/server.js",
+  "main": "dist/src/server.js",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node dist/src/server.js",
     "dev": "nodemon src/server.ts",
-    "build": "tsc"
+    "build": "node scripts/prepare-db.js && tsc",
+    "postinstall": "node scripts/prepare-db.js && prisma generate",
+    "prepare-db": "node scripts/prepare-db.js"
   },
   "keywords": [],
   "author": "",

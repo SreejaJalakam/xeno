@@ -1,0 +1,13 @@
+{
+    "name": "shopify-ingestion-root",
+    "version": "1.0.0",
+    "description": "Root package for Heroku deployment",
+    "scripts": {
+        "install": "cd backend && npm install && cd ../frontend && npm install",
+        "build": "cd backend && npm run build",
+        "start": "cd backend && npm start"
+    },
+    "engines": {
+        "node": "18.x"
+    }
+}
